@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:advance_pdf_viewer/src/zoomable_widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/material.dart';
 
 /// A class to represent PDF page
 /// [imgPath], path of the image (pdf page)
@@ -19,6 +20,7 @@ class PDFPage extends StatefulWidget {
   final double minScale;
   final double maxScale;
   final double panLimit;
+
   PDFPage(
     this.imgPath,
     this.num, {
@@ -34,7 +36,13 @@ class PDFPage extends StatefulWidget {
 }
 
 class _PDFPageState extends State<PDFPage> {
-  ImageProvider? provider = null;
+  late ImageProvider? _provider;
+
+  @override
+  void initState() {
+    _provider = null;
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -53,8 +61,8 @@ class _PDFPageState extends State<PDFPage> {
   _repaint() {
     if (widget.imgPath == null) return;
 
-    provider = FileImage(File(widget.imgPath!));
-    final resolver = provider.resolve(createLocalImageConfiguration(context));
+    _provider = FileImage(File(widget.imgPath!));
+    final resolver = _provider!.resolve(createLocalImageConfiguration(context));
     resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
       if (!alreadyPainted) setState(() {});
     }));
@@ -62,8 +70,7 @@ class _PDFPageState extends State<PDFPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (provider == null)
-      return const Center(child: CircularProgressIndicator());
+    if (_provider == null) return Center(child: CircularProgressIndicator());
 
     return Container(
         decoration: null,
@@ -73,7 +80,7 @@ class _PDFPageState extends State<PDFPage> {
           minScale: widget.minScale,
           panLimit: widget.panLimit,
           maxScale: widget.maxScale,
-          child: Image(image: provider),
+          child: Image(image: provider!),
         ));
   }
 }
