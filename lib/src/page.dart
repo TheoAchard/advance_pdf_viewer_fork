@@ -34,7 +34,7 @@ class PDFPage extends StatefulWidget {
 }
 
 class _PDFPageState extends State<PDFPage> {
-  late ImageProvider provider;
+  ImageProvider? provider = null;
 
   @override
   void didChangeDependencies() {
@@ -51,6 +51,8 @@ class _PDFPageState extends State<PDFPage> {
   }
 
   _repaint() {
+    if (widget.imgPath == null) return;
+
     provider = FileImage(File(widget.imgPath!));
     final resolver = provider.resolve(createLocalImageConfiguration(context));
     resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
@@ -60,6 +62,9 @@ class _PDFPageState extends State<PDFPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (provider == null)
+      return const Center(child: CircularProgressIndicator());
+
     return Container(
         decoration: null,
         child: ZoomableWidget(
