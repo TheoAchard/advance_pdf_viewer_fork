@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:advance_pdf_viewer/src/zoomable_widget.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/material.dart';
 
 /// A class to represent PDF page
@@ -80,7 +78,7 @@ class _PDFPageState extends State<PDFPage> {
           minScale: widget.minScale,
           panLimit: widget.panLimit,
           maxScale: widget.maxScale,
-          child: Image(image: provider!),
+          child: Image(image: _provider!),
         ));
   }
 }
