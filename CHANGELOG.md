@@ -1,5 +1,13 @@
 # Changelog
-# 2.0.0
+
+## 2.0.2
+* Bugfix crashing
+
+## 2.0.1
+* Bug fixes related to cache
+* improvements
+
+## 2.0.0
 * Null safety upgrade
 * Fixed some issues
 * new `numberPickerConfirmWidget`

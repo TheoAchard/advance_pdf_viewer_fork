@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:advance_pdf_viewer/src/zoomable_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/painting.dart';
 
 /// A class to represent PDF page
 /// [imgPath], path of the image (pdf page)
@@ -18,8 +19,7 @@ class PDFPage extends StatefulWidget {
   final double minScale;
   final double maxScale;
   final double panLimit;
-
-  PDFPage(
+  const PDFPage(
     this.imgPath,
     this.num, {
     this.onZoomChanged,
@@ -34,13 +34,7 @@ class PDFPage extends StatefulWidget {
 }
 
 class _PDFPageState extends State<PDFPage> {
-  late ImageProvider? _provider;
-
-  @override
-  void initState() {
-    _provider = null;
-    super.initState();
-  }
+  late ImageProvider provider;
 
   @override
   void didChangeDependencies() {
@@ -56,29 +50,27 @@ class _PDFPageState extends State<PDFPage> {
     }
   }
 
-  _repaint() {
-    if (widget.imgPath == null) return;
-
-    _provider = FileImage(File(widget.imgPath!));
-    final resolver = _provider!.resolve(createLocalImageConfiguration(context));
-    resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
-      if (!alreadyPainted) setState(() {});
-    }));
+  void _repaint() {
+    provider = FileImage(File(widget.imgPath!));
+    final resolver = provider.resolve(createLocalImageConfiguration(context));
+    resolver.addListener(
+      ImageStreamListener(
+        (imgInfo, alreadyPainted) {
+          if (!alreadyPainted && mounted) setState(() {});
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_provider == null) return Center(child: CircularProgressIndicator());
-
-    return Container(
-        decoration: null,
-        child: ZoomableWidget(
-          onZoomChanged: widget.onZoomChanged,
-          zoomSteps: widget.zoomSteps,
-          minScale: widget.minScale,
-          panLimit: widget.panLimit,
-          maxScale: widget.maxScale,
-          child: Image(image: _provider!),
-        ));
+    return ZoomableWidget(
+      onZoomChanged: widget.onZoomChanged,
+      zoomSteps: widget.zoomSteps,
+      minScale: widget.minScale,
+      panLimit: widget.panLimit,
+      maxScale: widget.maxScale,
+      child: Image(image: provider),
+    );
   }
 }
